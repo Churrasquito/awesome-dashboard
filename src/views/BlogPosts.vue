@@ -8,6 +8,27 @@
       </div>
     </div>
 
+    <!-- Dynamic Row of Posts -->
+    <d-row>
+      <d-col v-for="(post, idx) in posts" :key="idx" lg="3" md="6" sm="12" class="mb-4">
+        <d-card class="card-small card-post card-post--1">
+          <div class="card-post__image" :style="{ backgroundImage: 'url(\'' + post.featured_media + '\')' }">
+            <d-badge pill :class="['card-post__category', 'bg-' + post.template ]">Hardcode Category</d-badge>
+            <!--<div class="card-post__author d-flex">-->
+              <!--<a href="#" class="card-post__author-avatar card-post__author-avatar&#45;&#45;small" :style="{ backgroundImage: 'url(\'' + post.authorAvatar + '\')' }">Written by {{ post.author }}</a>-->
+            <!--</div>-->
+          </div>
+          <d-card-body>
+            <h5 class="card-title">
+              <a href="#" class="text-fiord-blue">{{ post.title }}</a>
+            </h5>
+            <p class="card-text d-inline-block mb-3" v-html="post.content"></p>
+            <p class="text-muted">{{ new Date(post.date).toLocaleDateString() }}</p>
+          </d-card-body>
+        </d-card>
+      </d-col>
+    </d-row>
+
     <!-- First Row of Posts -->
     <d-row>
       <d-col v-for="(post, idx) in PostsListOne" :key="idx" lg="3" md="6" sm="12" class="mb-4">
@@ -98,6 +119,9 @@
 
 <script>
 // First Row of Posts
+import { db } from '../services/firebase';
+
+
 const PostsListOne = [{
   backgroundImage: require('@/assets/images/content-management/1.jpeg'),
   category: 'Business',
@@ -216,14 +240,28 @@ const PostsListFour = [{
   date: '29 February 2019',
 }];
 
+const collectionPosts = db.collection('posts');
+
 export default {
   data() {
     return {
+      posts: [],
       PostsListOne,
       PostsListTwo,
       PostsListThree,
       PostsListFour,
     };
+  },
+  // created() {
+  //   console.log(this.leads);
+  // },
+  firestore: {
+    posts: collectionPosts,
+  },
+  created() {
+    collectionPosts.get().then(() => {
+      // do something
+    });
   },
 };
 </script>

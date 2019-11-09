@@ -15,7 +15,7 @@
         <d-card class="card-small mb-3">
           <d-card-body>
             <d-form class="add-new-post">
-              <d-input size="lg" class="mb-3" @input="changeTitle" placeholder="Your Post Title" />
+              <d-input size="lg" class="mb-3" v-model="post.title" placeholder="Your Post Title" />
               <anp-editor @update="updateContent"/>
             </d-form>
           </d-card-body>
@@ -25,6 +25,7 @@
       <!-- Sidebar Widgets -->
       <d-col lg="3" md="12">
         <anp-sidebar-actions @publish="publishPost"/>
+        <anp-sidebar-image-upload @change="handleFeaturedMediaUpload" @ />
         <anp-sidebar-categories />
       </d-col>
     </d-row>
@@ -35,15 +36,16 @@
 import 'quill/dist/quill.snow.css';
 
 import SidebarActions from '@/components/add-new-post/SidebarActions.vue';
+import SidebarImageUpload from '@/components/add-new-post/SidebarImageUpload.vue';
 import SidebarCategories from '@/components/add-new-post/SidebarCategories.vue';
 import Editor from '@/components/add-new-post/Editor.vue';
 
 import { db, storage } from '../services/firebase';
 
 function slugify(string) {
-  const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
-  const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnooooooooprrsssssttuuuuuuuuuwxyyzzz------'
-  const p = new RegExp(a.split('').join('|'), 'g')
+  const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;';
+  const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnooooooooprrsssssttuuuuuuuuuwxyyzzz------';
+  const p = new RegExp(a.split('').join('|'), 'g');
 
   return string.toString().toLowerCase()
     .replace(/\s+/g, '-') // Replace spaces with -
@@ -52,17 +54,19 @@ function slugify(string) {
     .replace(/[^\w\-]+/g, '') // Remove all non-word characters
     .replace(/\-\-+/g, '-') // Replace multiple - with single -
     .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, '') // Trim - from end of text
+    .replace(/-+$/, ''); // Trim - from end of text
 }
 
 export default {
   components: {
     anpEditor: Editor,
     anpSidebarActions: SidebarActions,
+    anpSidebarImageUpload: SidebarImageUpload,
     anpSidebarCategories: SidebarCategories,
   },
   data() {
     return {
+      file: '',
       post: {
         date: '',
         modified: '',
@@ -95,14 +99,16 @@ export default {
     },
   },
   methods: {
-    publishPost() {
+    async publishPost() {
       const currentDate = Date.now();
       if (!this.post.date) {
         this.post.date = currentDate;
       }
       this.post.modified = currentDate;
-      
-      //this.addPost();
+
+      await this.uploadImage();
+
+      this.addPost();
     },
     addPost() {
       db.collection('posts')
@@ -116,17 +122,25 @@ export default {
     updateContent(content) {
       this.post.content = content;
     },
-    changeTitle(title) {
-      this.title = title;
+    handleFeaturedMediaUpload(file) {
+      this.file = file;
     },
     uploadImage() {
       // Create a root reference
-      let storageRef = storage.ref();
-      // Create a reference to 'images/mountains.jpg'
-      let postImagesRef = storageRef.child(`post/${myFileName}.jpg`);
+      const storageRef = storage.ref(`posts/${this.file.name}`);
 
-      postImagesRef.put(myFileUploaded).then(function(snapshot) {
-        console.log('Uploaded a blob or file!');
+      const uploadTask = storageRef.put(this.file);
+
+      uploadTask.on('state_changed', () => {
+        console.log('Uploading!');
+      }, (error) => {
+        // Handle unsuccessful upload
+        console.log(error);
+      }, () => {
+        // Handle successful upload and complete
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          this.post.featured_media = downloadURL;
+        });
       });
     },
   },
