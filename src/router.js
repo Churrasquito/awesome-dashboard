@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import firebase from 'firebase';
+// import firebase from 'firebase';
 
 import PersonalBlog from './views/PersonalBlog.vue';
 import UserProfileLite from './views/UserProfileLite.vue';
@@ -77,14 +77,14 @@ const router = new Router({
 
 export default router;
 
-router.beforeEach((to, from, next) => {
-  const user = firebase.auth().currentUser;
-  console.log(user);
-  if (to.path !== '/login' && !user) {
-    next('/login');
-  } else if (to.path === '/login' && user) {
-    next('/');
-  } else {
-    next();
-  }
-});
+// router.beforeEach((to, from, next) => {
+//   const user = firebase.auth().currentUser;
+//   console.log(user);
+//   if (to.path !== '/login' && !user) {
+//     next('/login');
+//   } else if (to.path === '/login' && user) {
+//     next('/');
+//   } else {
+//     next();
+//   }
+// });

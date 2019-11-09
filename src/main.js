@@ -15,8 +15,8 @@ import router from './router';
 import Default from '@/layouts/Default.vue';
 
 // Firebase
-import { firestorePlugin } from 'vuefire';
-import firebase from 'firebase';
+// import { firestorePlugin } from 'vuefire';
+// import firebase from 'firebase';
 
 ShardsVue.install(Vue);
 
@@ -25,11 +25,11 @@ Vue.component('default-layout', Default);
 Vue.config.productionTip = false;
 Vue.prototype.$eventHub = new Vue();
 
-Vue.use(firestorePlugin);
+// Vue.use(firestorePlugin);
 
-firebase.auth().onAuthStateChanged(function () {
+// firebase.auth().onAuthStateChanged(function () {
   new Vue({
     router,
     render: h => h(App),
   }).$mount('#app');
-});
+// });
