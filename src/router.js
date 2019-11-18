@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+// import firebase from 'firebase';
 
 import PersonalBlog from './views/PersonalBlog.vue';
 import UserProfileLite from './views/UserProfileLite.vue';
@@ -8,10 +9,11 @@ import Errors from './views/Errors.vue';
 import ComponentsOverview from './views/ComponentsOverview.vue';
 import Tables from './views/Tables.vue';
 import BlogPosts from './views/BlogPosts.vue';
+import Login from './views/Login.vue';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   linkActiveClass: 'active',
@@ -23,6 +25,14 @@ export default new Router({
     {
       path: '/',
       redirect: '/blog-overview',
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: {
+        layout: 'login-layout',
+      },
     },
     {
       path: '/blog-overview',
@@ -64,3 +74,17 @@ export default new Router({
     },
   ],
 });
+
+export default router;
+
+// router.beforeEach((to, from, next) => {
+//   const user = firebase.auth().currentUser;
+//   console.log(user);
+//   if (to.path !== '/login' && !user) {
+//     next('/login');
+//   } else if (to.path === '/login' && user) {
+//     next('/');
+//   } else {
+//     next();
+//   }
+// });
