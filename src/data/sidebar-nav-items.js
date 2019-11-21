@@ -13,6 +13,12 @@ export default function () {
       name: 'blog-posts',
     },
   }, {
+    title: 'Posts',
+    htmlBefore: '<i class="material-icons">list</i>',
+    to: {
+      name: 'posts',
+    },
+  }, {
     title: 'Add New Post',
     htmlBefore: '<i class="material-icons">note_add</i>',
     to: {
