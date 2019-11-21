@@ -9,6 +9,7 @@ import Errors from './views/Errors.vue';
 import ComponentsOverview from './views/ComponentsOverview.vue';
 import Tables from './views/Tables.vue';
 import BlogPosts from './views/BlogPosts.vue';
+import TablePosts from './views/TablePosts.vue';
 import Login from './views/Login.vue';
 
 Vue.use(Router);
@@ -68,7 +69,13 @@ const router = new Router({
       path: '/blog-posts',
       name: 'blog-posts',
       component: BlogPosts,
-    }, {
+    },
+    {
+      path: '/posts',
+      name: 'posts',
+      component: TablePosts,
+    },
+    {
       path: '*',
       redirect: '/errors',
     },
